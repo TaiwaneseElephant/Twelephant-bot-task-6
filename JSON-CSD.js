@@ -35,5 +35,6 @@ async function getConfig() {
       content += item % (page[0], page[1].match(pattern)[1]);
     }
     content += footer;
+    console.log(content);
 }
 
