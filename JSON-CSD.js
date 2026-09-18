@@ -25,11 +25,14 @@ async function getConfig() {
         return;
     }
     const query_string = config.query_string;
+    const header = config.header;
     const item = config.item;
+    const footer = config.footer;
     const data = await search(query_string);
-    const content = ";
+    let content = header;
     for (let page of data.query.search) {
-      content.push([page.title, page.snippet.match(/<span class=\"searchmatch\">.+</span>/)]);
+      content += item % (page[0], page[1]);
     }
+    content += footer;
 }
 
