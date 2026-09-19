@@ -22,6 +22,7 @@ async function getConfig() {
     }
     const config = await response.json();
     if (!config.Enable) {
+        console.log("Stop");
         return;
     }
     const query_string = config.query_string;
