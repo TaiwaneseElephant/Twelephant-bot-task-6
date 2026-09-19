@@ -1,6 +1,6 @@
 async function search(query_string) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${query_string}&formatversion=2&format=json`, {
-        headers: {userAgent: "Twelephant-bot"}
+        headers: {"User-Agent": "Twelephant-bot"}
     });
     if (!response.ok) {
         throw new Error(response.status);
@@ -21,7 +21,7 @@ async function search(query_string) {
 
 async function getConfig() {
     const response = await fetch("https://zh.wikipedia.org/w/index.php?title=User:Twelephant-bot/task/6/config.json&action=raw&ctype=application/json", {
-        headers: {userAgent: "Twelephant-bot"}
+        headers: {"User-Agent": "Twelephant-bot"}
     });
     if (!response.ok) {
         throw new Error(response.status);
