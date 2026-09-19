@@ -23,6 +23,10 @@ async function getConfig() {
         throw new Error(response.status);
     }
     const config = await response.json();
+    return config;
+
+async function main() {
+    const config = await getConfig();
     if (!config.Enable) {
         console.log("Stop");
         return;
@@ -40,4 +44,5 @@ async function getConfig() {
     content += footer;
     console.log(content);
 }
+
 
