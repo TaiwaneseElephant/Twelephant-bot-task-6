@@ -46,7 +46,7 @@ async function main() {
     for (let page of pages) {
         const match = page[1].match(pattern);
         if (match) {
-              content += item % (page[0], match[1]);
+              content += item.replaceAll("${page}", page[0]).replaceAll("${reason}", match[1]);
         }
     }
     content += footer;
