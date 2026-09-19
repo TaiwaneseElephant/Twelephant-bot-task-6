@@ -8,7 +8,7 @@ async function search(query_string) {
     const data = await response.json();
     let result = [];
     for (let page of data.query.search) {
-      result.push([page.title, page.snippet.match(/\<span class="searchmatch">.+?<\/span>/)]);
+      result.push([page.title, page.snippet.match(/<span class="searchmatch">.+?<\/span>/)]);
     }
     return result; 
 }
