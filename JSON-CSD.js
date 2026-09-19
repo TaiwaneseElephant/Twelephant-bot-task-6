@@ -5,6 +5,7 @@ async function search(query_string) {
     if (!response.ok) {
         throw new Error(response.status);
     }
+    console.log(response);
     const data = await response.json();
     let result = [];
     for (let page of data.query.search) {
