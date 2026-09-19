@@ -40,7 +40,7 @@ async function main() {
     const header = config.header;
     const item = config.item;
     const footer = config.footer;
-    const pattern = new RegExp(config.pattern);
+    const pattern = new RegExp(config.regex.pattern, config.regex.flag);
     const pages = await search(query_string);
     let content = header;
     for (let page of pages) {
