@@ -1,7 +1,7 @@
 async function search(query_string) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${query_string}&formatversion=2`, {
         headers: {userAgent: "Twelephant-bot"}
-    }
+    });
     if (!response.ok) {
         throw new Error(response.status);
     }
