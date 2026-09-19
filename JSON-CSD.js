@@ -16,7 +16,7 @@ async function search(query_string) {
 async function getConfig() {
     const response = await fetch("https://zh.wikipedia.org/w/index.php?title=User:Twelephant-bot/task/6/config.json&action=raw&ctype=application/json", {
         headers: {userAgent: "Twelephant-bot"}
-    }
+    });
     if (!response.ok) {
         throw new Error(response.status);
     }
