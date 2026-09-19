@@ -24,6 +24,7 @@ async function getConfig() {
     }
     const config = await response.json();
     return config;
+}
 
 async function main() {
     const config = await getConfig();
@@ -45,4 +46,4 @@ async function main() {
     console.log(content);
 }
 
-
+main();
