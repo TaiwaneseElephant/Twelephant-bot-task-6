@@ -10,12 +10,11 @@ async function search(query_string) {
     let result = [];
     for (let page of data.query.search) {
         const match = page.snippet.match(/<span class="searchmatch">(.+?)<\/span>/);
-        if (!match) {
-            continue;
+        if (match) {
+            const text = match[1];
+            console.log(text);
+            result.push([page.title, text]);
         }
-        const text = match[1];
-        console.log(text);
-        result.push([page.title, text]);
     }
     return result; 
 }
@@ -45,7 +44,10 @@ async function main() {
     const pages = await search(query_string);
     let content = header;
     for (let page of pages) {
-      content += item % (page[0], page[1].match(pattern)[1]);
+        const match = page[1].match(pattern);
+        if (match) {
+              content += item % (page[0], match[1]);
+        }
     }
     content += footer;
     console.log(content);
