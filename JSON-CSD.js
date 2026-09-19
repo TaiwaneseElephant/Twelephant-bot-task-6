@@ -10,7 +10,7 @@ async function search(query_string) {
     for (let page of data.query.search) {
         const text = page.snippet.match(/<span class="searchmatch">.+?<\/span>/);
         console.log(text);
-        result.push([page.title, text];
+        result.push([page.title, text]);
     }
     return result; 
 }
