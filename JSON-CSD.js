@@ -42,9 +42,9 @@ async function main() {
     const item = config.item;
     const footer = config.footer;
     const pattern = new RegExp(config.pattern);
-    const data = await search(query_string);
+    const pages = await search(query_string);
     let content = header;
-    for (let page of data.query.search) {
+    for (let page of pages) {
       content += item % (page[0], page[1].match(pattern)[1]);
     }
     content += footer;
