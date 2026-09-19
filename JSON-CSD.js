@@ -6,7 +6,7 @@ async function search(query_string) {
         throw new Error(response.status);
     }
     const data = await response.json();
-    console.log(data);
+    console.log(response.headers);
     let result = [];
     for (let page of data.query.search) {
         const match = page.snippet.match(/<span class="searchmatch">(.+?)<\/span>/);
