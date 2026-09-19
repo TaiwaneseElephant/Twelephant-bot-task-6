@@ -31,7 +31,7 @@ async function getConfig() {
     const header = config.header;
     const item = config.item;
     const footer = config.footer;
-    const pattern = config.pattern;
+    const pattern = new RegExp(config.pattern);
     const data = await search(query_string);
     let content = header;
     for (let page of data.query.search) {
