@@ -21,11 +21,7 @@ async function search(query_string, headers) {
 }
 
 function setHeaders(cookies) {
-    let headers = [["User-Agent", "Twelephant-bot"]];
-    for (let cookie of cookies) {
-        headers.push(["Cookie", cookie.match(/^[^;]+/)[0]]);
-    }
-    return new Headers(headers);
+    return {"User-Agent": "Twelephant-bot", "Cookie":cookies};
 }
 
 async function getConfig() {
@@ -36,7 +32,7 @@ async function getConfig() {
         throw new Error(response.status);
     }
     const config = await response.json();
-    const cookies = response.headers.getSetCookie();
+    const cookies = response.headers.get("set-cookie");
     const headers = setHeaders(cookies);
     return [config, headers];
 }
