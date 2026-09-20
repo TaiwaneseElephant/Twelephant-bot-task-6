@@ -32,7 +32,7 @@ async function getConfig() {
 
 async function getToken(type) {
     return await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
-          headers = {"User-Agent": "Twelephant-bot"}
+          headers: {"User-Agent": "Twelephant-bot"}
     });
 
 async function main() {
