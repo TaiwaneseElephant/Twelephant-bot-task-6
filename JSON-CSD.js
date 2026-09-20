@@ -23,8 +23,21 @@ async function search(query_string, headers) {
     return result; 
 }
 
-function setHeaders(response, headers) {
-    return {"User-Agent": "Twelephant-bot", Cookie:(response.headers.getSetCookie().join("; ") || headers.Cookie)};
+function setHeaders(response, cookies) {
+    let headers =  {"User-Agent": "Twelephant-bot"};
+    for (const [key, value] of getCookies(response)) {
+        cookies[key] = value;
+    }
+    return cookies;
+}
+
+function getCookies(response) {
+    let cookies = {};
+    for (let cookie of response.headers.getSetCookie().split(";")) {
+        const split = cookie.split("=");
+        cookies[split[0].trim()] = split[1].trim();
+    }
+    return cookies;
 }
 
 async function getConfig() {
@@ -39,7 +52,7 @@ async function getConfig() {
     return [config, headers];
 }
 
-async function getToken(type, headers) {
+async function getToken(type, headers, cookies) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
         headers: headers
     });
@@ -48,11 +61,11 @@ async function getToken(type, headers) {
     }
     const data = await response.json();
     const token = data.query.tokens[`${type}token`];
-    headers = setHeaders(response, headers);
+    headers = setHeaders(response, cookies);
     return [token, headers];
 }
 
-async function login(name, pwd, headers) {
+async function login(name, pwd, headers, cookies) {
     const [logintoken, newheaders] = await getToken("login", headers);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
@@ -62,7 +75,7 @@ async function login(name, pwd, headers) {
     if (!response.ok) {
         throw new Error(response.status);
     }
-    return setHeaders(response, newheaders);
+    return setHeaders(response, cookies);
 }
 
 async function main() {
@@ -79,7 +92,7 @@ async function main() {
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
     const { readFile } = require("node:fs/promises");
     const secret = JSON.parse(await readFile("password.json"));
-    headers = await login(secret.ACCOUNT, secret.BOTPWD, headers);
+    headers = await login(secret.ACCOUNT, secret.BOTPWD, headers, cookies);
     const pagelist = await search(query_string, headers);
     let content = header;
     for (let [name, text] of pagelist) {
