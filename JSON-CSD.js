@@ -31,9 +31,28 @@ async function getConfig() {
 }
 
 async function getToken(type) {
-    return await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
-          headers: {"User-Agent": "Twelephant-bot"}
+    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
+        headers: {"User-Agent": "Twelephant-bot"}
     });
+    if (!response.ok) {
+        throw new Error(response.status);
+    }
+    const data = await response.json();
+    const token = data.query.tokens[`${type}token`];
+    return token;
+}
+
+async function login(name, pwd) {
+    const logintoken = await getToken("login");
+    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
+        method: "POST",
+        headers: {"User-Agent": "Twelephant-bot"},
+         body: JSON.stringify({lgname: name, lgpassword: pwd, lgtoken: logintoken})
+    });
+    if (!response.ok) {
+        throw new Error(response.status);
+    }
+    return response.headers.getSetCookie();
 }
 
 async function main() {
@@ -48,6 +67,9 @@ async function main() {
     const item = config.item;
     const footer = config.footer;
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
+    const { readFile } = require("node:fs/promises");
+    const secret = JSON.parse(await readFile("password.json"));
+    const cookies = await login(secret.ACCOUNT, secret.BOTPWD);
     const pagelist = await search(query_string);
     let content = header;
     for (let [name, text] of pagelist) {
