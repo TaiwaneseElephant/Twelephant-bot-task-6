@@ -87,7 +87,7 @@ async function login(name, pwd, headers, cookies) {
 }
 
 async function edit(page, content, summary, headers, cookies) {
-    let [token, newheader, newcookies] = getToken("csrf", headers, cookies);
+    let [token, newheader, newcookies] = await getToken("csrf", headers, cookies);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
         headers: newheaders,
