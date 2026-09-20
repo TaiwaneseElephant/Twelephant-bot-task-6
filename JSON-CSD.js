@@ -1,6 +1,6 @@
-async function search(query_string, cookies) {
+async function search(query_string, headers) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURIComponent(query_string)}&formatversion=2&format=json`, {
-        headers: setHeaders(cookies)
+        headers: headers
     });
     if (!response.ok) {
         throw new Error(response.status);
@@ -22,7 +22,7 @@ async function search(query_string, cookies) {
 function setHeaders(cookies) {
     let headers = [["User-Agent", "Twelephant-bot"]];
     for (let cookie of cookies) {
-        headers.push(["Cookie", cookie]);
+        headers.push(["Cookie", cookie.match(/^[^;]+/)[0]]);
     }
     return new Headers(headers);
 }
@@ -36,12 +36,13 @@ async function getConfig() {
     }
     const config = await response.json();
     const cookies = response.headers.getSetCookie();
-    return [config, cookies];
+    const headers = setHeaders(cookies);
+    return [config, headers];
 }
 
-async function getToken(type, cookies) {
+async function getToken(type, headers) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
-        headers: setHeaders(cookies)
+        headers: headers
     });
     if (!response.ok) {
         throw new Error(response.status);
@@ -51,11 +52,11 @@ async function getToken(type, cookies) {
     return token;
 }
 
-async function login(name, pwd, cookies) {
-    const logintoken = await getToken("login", cookies);
+async function login(name, pwd, headers) {
+    const logintoken = await getToken("login", headers);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
-        headers: setHeaders(cookies),
+        headers: headers,
         body: JSON.stringify({lgname: name, lgpassword: pwd, lgtoken: logintoken})
     });
     if (!response.ok) {
@@ -64,7 +65,7 @@ async function login(name, pwd, cookies) {
 }
 
 async function main() {
-    const [config, cookies] = await getConfig();
+    const [config, headers] = await getConfig();
     if (!config.Enable) {
         console.log("Stop");
         return;
@@ -77,8 +78,8 @@ async function main() {
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
     const { readFile } = require("node:fs/promises");
     const secret = JSON.parse(await readFile("password.json"));
-    await login(secret.ACCOUNT, secret.BOTPWD, cookies);
-    const pagelist = await search(query_string, cookies);
+    await login(secret.ACCOUNT, secret.BOTPWD, headers);
+    const pagelist = await search(query_string, headers);
     let content = header;
     for (let [name, text] of pagelist) {
         const match = text.match(pattern);
