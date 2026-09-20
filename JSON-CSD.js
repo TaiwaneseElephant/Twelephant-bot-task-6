@@ -1,5 +1,5 @@
-async function search(query_string) {
-    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURI(query_string)}&formatversion=2&format=json`, {
+async function search(query_string, cookies) {
+    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURIComponent(query_string)}&formatversion=2&format=json`, {
         headers: {"User-Agent": "Twelephant-bot"}
     });
     if (!response.ok) {
@@ -70,7 +70,7 @@ async function main() {
     const { readFile } = require("node:fs/promises");
     const secret = JSON.parse(await readFile("password.json"));
     const cookies = await login(secret.ACCOUNT, secret.BOTPWD);
-    const pagelist = await search(query_string);
+    const pagelist = await search(query_string, cookies);
     let content = header;
     for (let [name, text] of pagelist) {
         const match = text.match(pattern);
