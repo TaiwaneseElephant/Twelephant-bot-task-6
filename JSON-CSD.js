@@ -20,12 +20,11 @@ async function search(query_string, cookies) {
 }
 
 function setHeaders(cookies) {
-    let headers = new Headers();
-    headers.append("User-Agent", "Twelephant-bot")
+    let headers = [["User-Agent", "Twelephant-bot"]];
     for (let cookie of cookies) {
-        headers.append("Cookie", cookie);
+        headers.push(["Cookie", cookie]);
     }
-    return headers;
+    return new Headers(headers);
 }
 
 async function getConfig() {
