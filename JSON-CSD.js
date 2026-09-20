@@ -69,8 +69,7 @@ async function getToken(type, headers, cookies) {
 }
 
 async function login(name, pwd, headers, cookies) {
-    let logintoken, newheaders
-    [logintoken, newheaders, cookies] = await getToken("login", headers, cookies);
+    let [logintoken, newheaders, newcookies] = await getToken("login", headers, cookies);
     newheaders["Content-Type"] = "application/x-www-form-urlencoded"
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
@@ -84,7 +83,24 @@ async function login(name, pwd, headers, cookies) {
     if (!data.login || data.login.result != "Success") {
         throw new Error("Login Failed");
     }
-    return setHeaders(response, cookies);
+    return setHeaders(response, newcookies);
+}
+
+async function edit(page, content, summary, headers, cookies) {
+    const [token, newheader, newcookies] = getToken("csrf", headers, cookies)
+    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
+        method: "POST",
+        headers: newheaders,
+        body: new URLSearchParams({title: page, text: content, summary: summary, minor: true, bot: true, token: token}).toString()
+    });
+    if (!response.ok) {
+        throw new Error(response.status);
+    }
+    const data = await response.json();
+    if (data.error) {
+        throw new Error(data.error.code);
+    }
+    return  [newheader, newcookies];
 }
 
 async function main() {
@@ -112,6 +128,7 @@ async function main() {
     }
     content += footer;
     console.log(content);
+    await edit(page, content, summary, headers, cookies);
 }
 
 main();
