@@ -22,7 +22,7 @@ async function search(query_string, headers) {
 }
 
 function setHeaders(response, cookies) {
-    let headers =  {"User-Agent": "Twelephant-bot"};
+    let headers =  {"User-Agent": "Twelephant-bot", "Content-Type": "application/x-www-form-urlencoded"};
     for (const [key, value] of Object.entries(getCookies(response))) {
         cookies[key] = value;
     }
@@ -70,7 +70,6 @@ async function getToken(type, headers, cookies) {
 
 async function login(name, pwd, headers, cookies) {
     let [logintoken, newheaders, newcookies] = await getToken("login", headers, cookies);
-    newheaders["Content-Type"] = "application/x-www-form-urlencoded"
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
         headers: newheaders,
