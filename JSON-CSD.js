@@ -25,7 +25,7 @@ async function search(query_string, headers) {
 
 function setHeaders(response, cookies) {
     let headers =  {"User-Agent": "Twelephant-bot"};
-    for (const [key, value] of getCookies(response)) {
+    for (const [key, value] of Object.entries(getCookies(response))) {
         cookies[key] = value;
     }
     Cookieslist = [];
