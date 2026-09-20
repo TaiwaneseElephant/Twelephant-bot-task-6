@@ -53,17 +53,16 @@ async function getToken(type, headers) {
 }
 
 async function login(name, pwd, headers) {
-    const logintoken, headers = await getToken("login", headers);
+    const [logintoken, newheaders] = await getToken("login", headers);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
-        headers: headers,
+        headers: newheaders,
         body: new URLSearchParams({lgname: name, lgpassword: pwd, lgtoken: logintoken}).toString()
     });
     if (!response.ok) {
         throw new Error(response.status);
     }
-    headers = setHeaders(response);
-    resturn headers;
+    return setHeaders(response);
 }
 
 async function main() {
