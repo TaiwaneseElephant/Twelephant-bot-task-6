@@ -6,7 +6,7 @@ async function search(query_string) {
         throw new Error(response.status);
     }
     const data = await response.json();
-    console.log(response.headers);
+    console.log(response.headers.getSetCookie());
     let result = [];
     for (let page of data.query.search) {
         const match = page.snippet.match(/<span class="searchmatch">(.+?)<\/span>/);
@@ -30,23 +30,29 @@ async function getConfig() {
     return config;
 }
 
+async funtion getToken(type) {
+    return await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
+          headers = {"User-Agent": "Twelephant-bot"}
+    });
+
 async function main() {
     const config = await getConfig();
     if (!config.Enable) {
         console.log("Stop");
         return;
     }
+    const page = config.page;
     const query_string = config.query_string;
     const header = config.header;
     const item = config.item;
     const footer = config.footer;
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
-    const pages = await search(query_string);
+    const pagelist = await search(query_string);
     let content = header;
-    for (let page of pages) {
-        const match = page[1].match(pattern);
+    for (let [name, text] of pagelist) {
+        const match = text.match(pattern);
         if (match) {
-              content += item.replaceAll("${page}", page[0]).replaceAll("${reason}", match[1]);
+              content += item.replaceAll("${page}", name).replaceAll("${reason}", match[1]);
         }
     }
     content += footer;
