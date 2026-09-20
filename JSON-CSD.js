@@ -71,7 +71,8 @@ async function getToken(type, headers, cookies) {
 }
 
 async function login(name, pwd, headers, cookies) {
-    const [logintoken, newheaders, cookies] = await getToken("login", headers);
+    let logintoken, newheaders
+    [logintoken, newheaders, cookies] = await getToken("login", headers);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
         headers: newheaders,
