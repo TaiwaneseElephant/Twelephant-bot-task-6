@@ -81,6 +81,7 @@ async function login(name, pwd, headers, cookies) {
     if (!response.ok) {
         throw new Error(response.status);
     }
+    config.log(await response.json());
     return setHeaders(response, cookies);
 }
 
