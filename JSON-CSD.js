@@ -2,6 +2,7 @@ async function search(query_string, headers) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURIComponent(query_string)}&formatversion=2&format=json`, {
         headers: headers
     });
+    console.log(headers);
     if (!response.ok) {
         throw new Error(response.status);
     }
