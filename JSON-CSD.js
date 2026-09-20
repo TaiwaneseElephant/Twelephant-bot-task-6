@@ -66,6 +66,7 @@ async function getToken(type, headers, cookies) {
     }
     const data = await response.json();
     const token = data.query.tokens[`${type}token`];
+    console.log(token);
     [headers, cookies] = setHeaders(response, cookies);
     return [token, headers, cookies];
 }
