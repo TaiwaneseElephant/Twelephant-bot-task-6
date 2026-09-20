@@ -1,6 +1,6 @@
 async function search(query_string, cookies) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURIComponent(query_string)}&formatversion=2&format=json`, {
-        headers: {"User-Agent": "Twelephant-bot"}
+        headers: setHeaders(cookies)
     });
     if (!response.ok) {
         throw new Error(response.status);
@@ -19,6 +19,15 @@ async function search(query_string, cookies) {
     return result; 
 }
 
+async function setHeaders(cookies) {
+    let headers = new Headers();
+    let headers.append("User-Agent", "Twelephant-bot")
+    for (let cookie of cookies) {
+        headers.append("Set-Cookie", cookie);
+    }
+    return headers;
+}
+
 async function getConfig() {
     const response = await fetch("https://zh.wikipedia.org/w/index.php?title=User:Twelephant-bot/task/6/config.json&action=raw&ctype=application/json", {
         headers: {"User-Agent": "Twelephant-bot"}
@@ -27,12 +36,13 @@ async function getConfig() {
         throw new Error(response.status);
     }
     const config = await response.json();
-    return config;
+    const cookies = response.headers.getSetCookie();
+    return [config, cookies];
 }
 
-async function getToken(type) {
+async function getToken(type, cookies) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
-        headers: {"User-Agent": "Twelephant-bot"}
+        headers: setHeaders(cookies)
     });
     if (!response.ok) {
         throw new Error(response.status);
@@ -42,21 +52,20 @@ async function getToken(type) {
     return token;
 }
 
-async function login(name, pwd) {
-    const logintoken = await getToken("login");
+async function login(name, pwd, cookies) {
+    const logintoken = await getToken("login", cookies);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
-        headers: {"User-Agent": "Twelephant-bot"},
-         body: JSON.stringify({lgname: name, lgpassword: pwd, lgtoken: logintoken})
+        headers: setHeaders(cookies),
+        body: JSON.stringify({lgname: name, lgpassword: pwd, lgtoken: logintoken})
     });
     if (!response.ok) {
         throw new Error(response.status);
     }
-    return response.headers.getSetCookie();
 }
 
 async function main() {
-    const config = await getConfig();
+    const [config, cookies] = await getConfig();
     if (!config.Enable) {
         console.log("Stop");
         return;
@@ -69,7 +78,7 @@ async function main() {
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
     const { readFile } = require("node:fs/promises");
     const secret = JSON.parse(await readFile("password.json"));
-    const cookies = await login(secret.ACCOUNT, secret.BOTPWD);
+    await login(secret.ACCOUNT, secret.BOTPWD, cookies);
     const pagelist = await search(query_string, cookies);
     let content = header;
     for (let [name, text] of pagelist) {
