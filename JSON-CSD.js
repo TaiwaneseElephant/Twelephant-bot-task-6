@@ -23,8 +23,8 @@ async function search(query_string, headers) {
     return result; 
 }
 
-function setHeaders(cookies) {
-    return {"User-Agent": "Twelephant-bot", "Cookie":cookies};
+function setHeaders(response) {
+    return {"User-Agent": "Twelephant-bot", "Cookie":response.headers.get("set-cookie")};
 }
 
 async function getConfig() {
@@ -35,8 +35,7 @@ async function getConfig() {
         throw new Error(response.status);
     }
     const config = await response.json();
-    const cookies = response.headers.get("set-cookie");
-    const headers = setHeaders(cookies);
+    const headers = setHeaders(response);
     return [config, headers];
 }
 
@@ -49,11 +48,12 @@ async function getToken(type, headers) {
     }
     const data = await response.json();
     const token = data.query.tokens[`${type}token`];
-    return token;
+    headers = setHeaders(response);
+    return [token, headers];
 }
 
 async function login(name, pwd, headers) {
-    const logintoken = await getToken("login", headers);
+    const logintoken, headers = await getToken("login", headers);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
         headers: headers,
@@ -62,10 +62,12 @@ async function login(name, pwd, headers) {
     if (!response.ok) {
         throw new Error(response.status);
     }
+    headers = setHeaders(response);
+    resturn headers;
 }
 
 async function main() {
-    const [config, headers] = await getConfig();
+    let [config, headers] = await getConfig();
     if (!config.Enable) {
         console.log("Stop");
         return;
@@ -78,7 +80,7 @@ async function main() {
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
     const { readFile } = require("node:fs/promises");
     const secret = JSON.parse(await readFile("password.json"));
-    await login(secret.ACCOUNT, secret.BOTPWD, headers);
+    headers = await login(secret.ACCOUNT, secret.BOTPWD, headers);
     const pagelist = await search(query_string, headers);
     let content = header;
     for (let [name, text] of pagelist) {
