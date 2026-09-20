@@ -19,11 +19,11 @@ async function search(query_string, cookies) {
     return result; 
 }
 
-async function setHeaders(cookies) {
+function setHeaders(cookies) {
     let headers = new Headers();
-    let headers.append("User-Agent", "Twelephant-bot")
+    headers.append("User-Agent", "Twelephant-bot")
     for (let cookie of cookies) {
-        headers.append("Set-Cookie", cookie);
+        headers.append("Cookie", cookie);
     }
     return headers;
 }
