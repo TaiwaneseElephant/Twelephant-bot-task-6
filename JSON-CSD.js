@@ -28,7 +28,12 @@ function setHeaders(response, cookies) {
     for (const [key, value] of getCookies(response)) {
         cookies[key] = value;
     }
-    return cookies;
+    Cookieslist = [];
+    for (const [key, value] of Object.entries(cookies)) {
+        Cookieslist.push(`${key}=${value}`);
+    }
+    headers.Cookie = Cookieslist.join("; ")
+    return [headers, cookies];
 }
 
 function getCookies(response) {
@@ -48,8 +53,8 @@ async function getConfig() {
         throw new Error(response.status);
     }
     const config = await response.json();
-    const headers = setHeaders(response, {});
-    return [config, headers];
+    const [headers, cookies] = setHeaders(response, {});
+    return [config, headers, cookies];
 }
 
 async function getToken(type, headers, cookies) {
@@ -61,12 +66,12 @@ async function getToken(type, headers, cookies) {
     }
     const data = await response.json();
     const token = data.query.tokens[`${type}token`];
-    headers = setHeaders(response, cookies);
-    return [token, headers];
+    [headers, cookies] = setHeaders(response, cookies);
+    return [token, headers, cookies];
 }
 
 async function login(name, pwd, headers, cookies) {
-    const [logintoken, newheaders] = await getToken("login", headers);
+    const [logintoken, newheaders, cookies] = await getToken("login", headers);
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
         headers: newheaders,
@@ -79,7 +84,7 @@ async function login(name, pwd, headers, cookies) {
 }
 
 async function main() {
-    let [config, headers] = await getConfig();
+    let [config, headers, cookies] = await getConfig();
     if (!config.Enable) {
         console.log("Stop");
         return;
@@ -92,7 +97,7 @@ async function main() {
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
     const { readFile } = require("node:fs/promises");
     const secret = JSON.parse(await readFile("password.json"));
-    headers = await login(secret.ACCOUNT, secret.BOTPWD, headers, cookies);
+    [headers, cookies] = await login(secret.ACCOUNT, secret.BOTPWD, headers, cookies);
     const pagelist = await search(query_string, headers);
     let content = header;
     for (let [name, text] of pagelist) {
