@@ -30,7 +30,7 @@ async function getConfig() {
     return config;
 }
 
-async funtion getToken(type) {
+async function getToken(type) {
     return await fetch(`https://zh.wikipedia.org/w/api.php?action=query&meta=tokens&type=${type}&formatversion=2&format=json`, {
           headers = {"User-Agent": "Twelephant-bot"}
     });
