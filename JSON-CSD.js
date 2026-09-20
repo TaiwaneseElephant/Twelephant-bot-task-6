@@ -54,7 +54,7 @@ async function login(name, pwd, headers) {
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=login&formatversion=2&format=json`, {
         method: "POST",
         headers: headers,
-        body: JSON.stringify({lgname: name, lgpassword: pwd, lgtoken: logintoken})
+        body: new URLSearchParams({lgname: name, lgpassword: pwd, lgtoken: logintoken}).toString()
     });
     if (!response.ok) {
         throw new Error(response.status);
