@@ -100,7 +100,7 @@ async function edit(page, content, summary, headers, cookies) {
     if (data.error) {
         throw new Error(data.error.code);
     }
-    return  [newheader, newcookies];
+    return  [newheaders, newcookies];
 }
 
 async function main() {
