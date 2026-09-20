@@ -1,5 +1,5 @@
 async function search(query_string, headers) {
-    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURI(query_string)}&assertuser=Twelephant-bot&formatversion=2&format=json`, {
+    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURIComponent(query_string)}&assertuser=Twelephant-bot&formatversion=2&format=json`, {
         headers: headers
     });
     console.log(headers);
@@ -8,8 +8,8 @@ async function search(query_string, headers) {
     }
     const data = await response.json();
     console.log(response.headers.getSetCookie());
-    if (response.error) {
-        throw new Error(response.error);
+    if (data.error) {
+        throw new Error(data.error);
     }
     let result = [];
     for (let page of data.query.search) {
