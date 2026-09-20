@@ -35,7 +35,7 @@ async function getConfig() {
         throw new Error(response.status);
     }
     const config = await response.json();
-    const headers = setHeaders(response, headers);
+    const headers = setHeaders(response, {});
     return [config, headers];
 }
 
