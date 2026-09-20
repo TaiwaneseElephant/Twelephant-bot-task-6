@@ -9,7 +9,7 @@ async function search(query_string, headers) {
     const data = await response.json();
     console.log(response.headers.getSetCookie());
     if (data.error) {
-        throw new Error(data.error);
+        throw new Error(data.error.code);
     }
     let result = [];
     for (let page of data.query.search) {
