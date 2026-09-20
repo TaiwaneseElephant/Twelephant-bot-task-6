@@ -8,6 +8,9 @@ async function search(query_string, headers) {
     }
     const data = await response.json();
     console.log(response.headers.getSetCookie());
+    if (response.error) {
+        throw new Error(response.error);
+    }
     let result = [];
     for (let page of data.query.search) {
         const match = page.snippet.match(/<span class="searchmatch">(.+?)<\/span>/);
