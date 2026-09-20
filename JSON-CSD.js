@@ -115,6 +115,7 @@ async function main() {
     const item = config.item;
     const footer = config.footer;
     const pattern = new RegExp(config.regex.pattern, config.regex.flag);
+    const summary = config.summary;
     const { readFile } = require("node:fs/promises");
     const secret = JSON.parse(await readFile("password.json"));
     [headers, cookies] = await login(secret.ACCOUNT, secret.BOTPWD, headers, cookies);
