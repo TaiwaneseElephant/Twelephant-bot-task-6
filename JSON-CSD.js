@@ -23,8 +23,8 @@ async function search(query_string, headers) {
     return result; 
 }
 
-function setHeaders(response) {
-    return {"User-Agent": "Twelephant-bot", "Cookie":response.headers.get("set-cookie")};
+function setHeaders(response, headers) {
+    return {"User-Agent": "Twelephant-bot", Cookie:(response.headers.getSetCookie().join("; ") || headers.Cookie)};
 }
 
 async function getConfig() {
@@ -35,7 +35,7 @@ async function getConfig() {
         throw new Error(response.status);
     }
     const config = await response.json();
-    const headers = setHeaders(response);
+    const headers = setHeaders(response, headers);
     return [config, headers];
 }
 
@@ -48,7 +48,7 @@ async function getToken(type, headers) {
     }
     const data = await response.json();
     const token = data.query.tokens[`${type}token`];
-    headers = setHeaders(response);
+    headers = setHeaders(response, headers);
     return [token, headers];
 }
 
@@ -62,7 +62,7 @@ async function login(name, pwd, headers) {
     if (!response.ok) {
         throw new Error(response.status);
     }
-    return setHeaders(response);
+    return setHeaders(response, newheaders);
 }
 
 async function main() {
