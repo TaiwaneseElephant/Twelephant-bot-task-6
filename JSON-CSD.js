@@ -39,7 +39,7 @@ function setHeaders(response, cookies) {
 function getCookies(response) {
     let cookies = {};
     for (let cookie of response.headers.getSetCookie()) {
-        const split = cookie.split(";", 1)[0].split("=");
+        const split = cookie.split(";")[0].split("=", 1);
         cookies[split[0].trim()] = split[1].trim();
     }
     return cookies;
