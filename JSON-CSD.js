@@ -87,7 +87,7 @@ async function login(name, pwd, headers, cookies) {
 }
 
 async function edit(page, content, summary, headers, cookies) {
-    let token = await getToken("csrf", headers, cookies)[0];
+    let token = (await getToken("csrf", headers, cookies))[0];
     const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=edit&assertuser=Twelephant-bot&formatversion=2&format=json`, {
         method: "POST",
         headers: headers,
