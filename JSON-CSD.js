@@ -1,5 +1,5 @@
 async function search(query_string, headers) {
-    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srsearch=${encodeURIComponent(query_string)}&assertuser=Twelephant-bot&formatversion=2&format=json`, {
+    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=query&list=search&srnamespace=*&srprop=snippet&srlimit=max&srsearch=${encodeURIComponent(query_string)}&assert=user&formatversion=2&format=json`, {
         headers: headers
     });
     if (!response.ok) {
@@ -87,7 +87,7 @@ async function login(name, pwd, headers, cookies) {
 
 async function edit(page, content, summary, headers, cookies) {
     let token = (await getToken("csrf", headers, cookies))[0];
-    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=edit&assertuser=Twelephant-bot&formatversion=2&format=json`, {
+    const response = await fetch(`https://zh.wikipedia.org/w/api.php?action=edit&assert=user&formatversion=2&format=json`, {
         method: "POST",
         headers: headers,
         body: new URLSearchParams({title: page, text: content, summary: summary, minor: true, bot: true, token: token}).toString()
